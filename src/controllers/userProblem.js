@@ -1,5 +1,5 @@
 const { getLanguageById, submitBatch } = require("../utils/ProblemUtility");
-const Problem = require("../models/Problem");
+const Problem = require("../models/problem");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const User = require("../models/user");
@@ -72,7 +72,7 @@ const createProblem = async (req, res) => {
       startCode: normalizedStartCode,
       referenceSolution: normalizedSolutions,
       editorial,
-      problemCreater: req.result._id, // ✅ FIXED
+      problemCreater: req.result._id, 
     });
 
     return res.status(201).send({

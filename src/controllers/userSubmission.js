@@ -1,8 +1,7 @@
-// const { request } = require("express");
-const Problem = require("../models/Problem");
+const Problem = require("../models/problem");
 const Submission = require("../models/submission");
 const { getLanguageById, submitBatch } = require("../utils/ProblemUtility");
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require("cloudinary").v2;
 const User = require("../models/user");
 
 cloudinary.config({
@@ -10,7 +9,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
 
 const submitCode = async (req, res) => {
   try {
@@ -83,11 +81,6 @@ const submitCode = async (req, res) => {
 
     await submittedResult.save();
 
-    //problemId ko insert karenge userschema ke problem solve ,mein if it is not present there
-    // if(!req.result.problemSolved.includes(problemId)){
-    // req.result.problemSolved.push(problemId);
-    // await req.result.save();
-    //}
     if (status === "accepted") {
       const alreadySolved = req.result.problemSolved.some(
         (id) => id.toString() === problemId.toString(),
@@ -150,7 +143,6 @@ const runcode = async (req, res) => {
   }
 };
 
-
 // 1. Signature generate karo
 const generateProfilePicSignature = async (req, res) => {
   try {
@@ -166,7 +158,7 @@ const generateProfilePicSignature = async (req, res) => {
 
     const signature = cloudinary.utils.api_sign_request(
       uploadParams,
-      process.env.CLOUDINARY_API_SECRET
+      process.env.CLOUDINARY_API_SECRET,
     );
 
     res.json({
@@ -193,7 +185,7 @@ const saveProfilePicture = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.result._id,
       { profilePicture: secureUrl },
-      { new: true }
+      { new: true },
     );
 
     res.status(200).json({
@@ -214,8 +206,8 @@ const getUserSubmissions = async (req, res) => {
     const submissions = await Submission.find({ userId })
       .populate({
         path: "problemId",
-        model: Problem,        // ← string nahi, direct model
-        select: "title difficulty"
+        model: Problem, // ← string nahi, direct model
+        select: "title difficulty",
       })
       .sort({ createdAt: -1 })
       .limit(10);
@@ -223,7 +215,9 @@ const getUserSubmissions = async (req, res) => {
     res.status(200).json(submissions);
   } catch (err) {
     console.error("SUBMISSION ERROR:", err);
-    res.status(500).json({ message: "Failed to fetch submissions", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch submissions", error: err.message });
   }
 };
 
@@ -235,7 +229,7 @@ const deleteProfilePicture = async (req, res) => {
       const urlParts = user.profilePicture.split("/");
       const uploadIndex = urlParts.indexOf("upload");
       const publicId = urlParts
-        .slice(uploadIndex + 2)  // v123 version skip
+        .slice(uploadIndex + 2) // v123 version skip
         .join("/")
         .replace(/\.[^/.]+$/, ""); // .jpg/.png remove
       await cloudinary.uploader.destroy(publicId);
@@ -247,6 +241,11 @@ const deleteProfilePicture = async (req, res) => {
   }
 };
 
-// module.exports mein add karo:
-
-module.exports = { submitCode, runcode, generateProfilePicSignature, saveProfilePicture, getUserSubmissions, deleteProfilePicture };
+module.exports = {
+  submitCode,
+  runcode,
+  generateProfilePicSignature,
+  saveProfilePicture,
+  getUserSubmissions,
+  deleteProfilePicture,
+};
