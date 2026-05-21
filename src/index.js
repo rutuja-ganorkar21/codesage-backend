@@ -13,9 +13,9 @@ const vedioRouter = require("./routes/vedioCreator");
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,  
+    origin: process.env.FRONTEND_URL,
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -26,6 +26,11 @@ app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", vedioRouter);
+
+// Health check route
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 const InitializeConnection = async () => {
   try {
