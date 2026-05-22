@@ -26,7 +26,6 @@ npm install
 
 Create `.env`:
 ```env
-PORT=3000
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret
 REDIS_URL=your_redis_url
