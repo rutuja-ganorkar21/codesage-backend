@@ -8,8 +8,15 @@ const redisClient = require("./config/redis");
 const problemRouter = require("./routes/ProblemCreater");
 const submitRouter = require("./routes/submit");
 const aiRouter = require("./routes/aiChatting");
-const cors = require("cors");
 const vedioRouter = require("./routes/vedioCreator");
+const savedCodeRouter = require('./routes/savedCode');
+
+
+const cors = require("cors");
+
+
+
+
 
 app.use(
   cors({
@@ -28,6 +35,8 @@ app.use("/problem", problemRouter);
 app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", vedioRouter);
+app.use('/code', savedCodeRouter);
+
 
 // Health check route
 app.get("/health", (req, res) => {
