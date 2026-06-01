@@ -8,12 +8,7 @@ const solveDoubt = async (req, res) => {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
 
-    // Streaming headers
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Transfer-Encoding', 'chunked');
-    res.setHeader('Cache-Control', 'no-cache');
-
-    const response = await ai.models.generateContentStream({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: messages,
       config: {
@@ -81,22 +76,12 @@ Your goal is to help users learn DSA through the lens of the current problem.`,
       },
     });
 
-    let fullReply = '';
-
-    for await (const chunk of response) {
-      const text = chunk.text;
-      if (text) {
-        fullReply += text;
-        res.write(text);
-      }
-    }
-
-    res.end();
+    const assistantReply = response.text;
 
     // DB mein save karo
     const updatedMessages = [
       ...messages.slice(-20),
-      { role: 'model', parts: [{ text: fullReply }] }
+      { role: 'model', parts: [{ text: assistantReply }] }
     ];
 
     await ChatHistory.findOneAndUpdate(
@@ -104,6 +89,8 @@ Your goal is to help users learn DSA through the lens of the current problem.`,
       { $set: { messages: updatedMessages } },
       { upsert: true, new: true }
     );
+
+    res.status(200).json({ reply: assistantReply });
 
   } catch (err) {
     console.error(err);
