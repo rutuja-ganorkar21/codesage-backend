@@ -20,12 +20,12 @@ const getLanguageById = (lang) => {
 
 const submitBatch = async (submissions) => {
   try {
-    // ✅ Empty check
+    
     if (!submissions || submissions.length === 0) {
       throw new Error("No submissions provided to Judge0");
     }
 
-    // ✅ Invalid submissions filter karo
+   
     const validSubmissions = submissions.filter(
       (s) => s.source_code && s.language_id && s.stdin !== undefined
     );

@@ -7,10 +7,6 @@ const adminMiddleware = require('../middleware/adminMiddlware');
 const { generateProfilePicSignature, saveProfilePicture, deleteProfilePicture } = require("../controllers/userSubmission");
 
 
-
-
-
-
 authRouter.post('/register',register);
 authRouter.post('/login',login);
 authRouter.post('/logout',userMiddleware ,logout);

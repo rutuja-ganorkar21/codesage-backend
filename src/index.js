@@ -10,12 +10,10 @@ const submitRouter = require("./routes/submit");
 const aiRouter = require("./routes/aiChatting");
 const vedioRouter = require("./routes/vedioCreator");
 const savedCodeRouter = require('./routes/savedCode');
+const communityRouter = require('./routes/communitySolution'); 
 
 
 const cors = require("cors");
-
-
-
 
 
 app.use(
@@ -36,6 +34,7 @@ app.use("/submission", submitRouter);
 app.use("/ai", aiRouter);
 app.use("/video", vedioRouter);
 app.use('/code', savedCodeRouter);
+app.use('/community', communityRouter); 
 
 
 // Health check route
