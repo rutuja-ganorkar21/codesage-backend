@@ -4,12 +4,12 @@ const Schema = mongoose.Schema;
 const communitySolutionSchema = new Schema({
   problemId: {
     type: Schema.Types.ObjectId,
-    ref: 'Problem',
+    ref: 'problem',
     required: true
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true
   },
   code: {
@@ -23,7 +23,7 @@ const communitySolutionSchema = new Schema({
   },
   likes: [{
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'user'
   }],
 }, { timestamps: true });
 
