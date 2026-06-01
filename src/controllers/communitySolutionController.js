@@ -6,7 +6,7 @@ const getSolutions = async (req, res) => {
     const solutions = await CommunitySolution.find({
       problemId: req.params.problemId
     })
-    .populate('userId', 'name email')
+    .populate('userId', 'firstName lastName profilePicture')
     .sort({ createdAt: -1 });
 
     res.json({ success: true, solutions });
