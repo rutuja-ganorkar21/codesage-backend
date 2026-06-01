@@ -1,7 +1,6 @@
 const CommunitySolution = require('../models/communitySolution');
 const Submission = require('../models/submission');
 
-// GET — saare community solutions fetch karo
 const getSolutions = async (req, res) => {
   try {
     const solutions = await CommunitySolution.find({
@@ -16,15 +15,14 @@ const getSolutions = async (req, res) => {
   }
 };
 
-// POST — solution post karo (sirf accepted users)
 const postSolution = async (req, res) => {
   try {
     const { code, language } = req.body;
+    const userId = req.result._id;
 
-    // Check — user ne problem accept kiya hai?
     const acceptedSubmission = await Submission.findOne({
       problemId: req.params.problemId,
-      userId: req.user.id,
+      userId: userId,
       status: 'accepted'
     });
 
@@ -35,10 +33,9 @@ const postSolution = async (req, res) => {
       });
     }
 
-    // Check — already post kiya hai?
     const alreadyPosted = await CommunitySolution.findOne({
       problemId: req.params.problemId,
-      userId: req.user.id
+      userId: userId
     });
 
     if (alreadyPosted) {
@@ -50,7 +47,7 @@ const postSolution = async (req, res) => {
 
     const solution = await CommunitySolution.create({
       problemId: req.params.problemId,
-      userId: req.user.id,
+      userId: userId,
       code,
       language
     });
@@ -61,7 +58,6 @@ const postSolution = async (req, res) => {
   }
 };
 
-// POST — like/unlike toggle
 const likeSolution = async (req, res) => {
   try {
     const solution = await CommunitySolution.findById(req.params.solutionId);
@@ -70,14 +66,17 @@ const likeSolution = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Solution nahi mila!' });
     }
 
-    const alreadyLiked = solution.likes.includes(req.user.id);
+    const userId = req.result._id;
+    const alreadyLiked = solution.likes.some(
+      id => id.toString() === userId.toString()
+    );
 
     if (alreadyLiked) {
       solution.likes = solution.likes.filter(
-        id => id.toString() !== req.user.id.toString()
+        id => id.toString() !== userId.toString()
       );
     } else {
-      solution.likes.push(req.user.id);
+      solution.likes.push(userId);
     }
 
     await solution.save();
