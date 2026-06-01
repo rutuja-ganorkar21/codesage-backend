@@ -1,14 +1,16 @@
 const { GoogleGenAI } = require("@google/genai");
+const ChatHistory = require('../models/chatHistory');
 
 const solveDoubt = async (req, res) => {
   try {
-    const { messages, title, description, testCases, startCode } = req.body;
+    const { messages, title, description, testCases, startCode, problemId } = req.body;
+    const userId = req.result._id;
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: messages, // ← sirf chat history
+      contents: messages,
       config: {
         systemInstruction: `You are an expert Data Structures and Algorithms (DSA) tutor specializing in helping users solve coding problems.
 
@@ -73,13 +75,25 @@ const solveDoubt = async (req, res) => {
 - Help build problem-solving intuition
 - Promote best coding practices
 
-
-
 Your goal is to help users learn and understand DSA concepts through the lens of the current problem.`,
       },
     });
 
-    res.status(200).json({ reply: response.text });
+    const assistantReply = response.text;
+
+    // Last 20 messages + naya reply save karo
+    const updatedMessages = [
+      ...messages.slice(-20),
+      { role: 'model', parts: [{ text: assistantReply }] }
+    ];
+
+    await ChatHistory.findOneAndUpdate(
+      { userId, problemId },
+      { $set: { messages: updatedMessages } },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({ reply: assistantReply });
 
   } catch (err) {
     console.error(err);
@@ -87,4 +101,20 @@ Your goal is to help users learn and understand DSA concepts through the lens of
   }
 };
 
-module.exports = { solveDoubt };
+const getChatHistory = async (req, res) => {
+  try {
+    const userId = req.result._id;
+    const { problemId } = req.params;
+
+    const history = await ChatHistory.findOne({ userId, problemId });
+
+    res.status(200).json({
+      messages: history ? history.messages : []
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { solveDoubt, getChatHistory };
