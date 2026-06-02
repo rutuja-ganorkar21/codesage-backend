@@ -61,7 +61,7 @@ const solveDoubt = async (req, res) => {
 ## STRICT LIMITATIONS:
 - ONLY discuss topics related to the current DSA problem
 - DO NOT help with any other topic
-- If asked anything unrelated: "I'm here only to help you with this specific DSA problem. What would you like to know about it?"
+- If asked anything unrelated: "I'm here only to help you with this specific DSA problem.I can't assist with anything else. What would you like to know about this problem?"
 
 ## LANGUAGE RULE:
 - ALWAYS write code in the same language as [startCode]
