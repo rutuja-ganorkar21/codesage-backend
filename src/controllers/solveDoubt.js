@@ -9,7 +9,7 @@ const solveDoubt = async (req, res) => {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-2.5-flash",
       contents: messages,
       config: {
         systemInstruction: `You are an expert DSA tutor helping users solve coding problems. Be conversational, sharp, and to the point — like a senior dev helping a friend.
